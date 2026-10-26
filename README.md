@@ -12,8 +12,8 @@ pnpm dev
 ```
 
 The envelope matches the supplied ivory and gold stationery reference. The
-opening lasts 4.4 seconds: gold seal release, scalloped flap unfolding, pocket
-sliding away, and invitation reveal. Visitors who prefer reduced motion get a
+opening lasts 1.9 seconds: the seal and flap open directly onto the actual
+invitation, without an intermediate card. Visitors who prefer reduced motion get a
 short transition. Artwork is bundled locally and the envelope layers use SVG
 clipping and CSS animation.
 

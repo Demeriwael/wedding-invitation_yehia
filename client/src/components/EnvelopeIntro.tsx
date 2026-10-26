@@ -2,9 +2,6 @@ import { useId } from "react";
 import "./envelope-intro.css";
 import envelopeArtwork from "@/assets/images/embossed-envelope.webp";
 import envelopeReference from "@/assets/images/envelope-reference.jpg";
-import bismillah from "@/assets/images/bismillah.webp";
-import yahyaName from "@/assets/images/yahya-name.webp";
-import daliaName from "@/assets/images/dalia-name.webp";
 
 // The two matching edges divide the artwork into a hinged flap and a pocket.
 const SCALLOPED_EDGE = `
@@ -61,18 +58,6 @@ export default function EnvelopeIntro({
           aria-describedby={noteId}
         >
           <span className="envelope-liner" aria-hidden="true" />
-          <span className="envelope-glow" aria-hidden="true" />
-          <span className="envelope-letter" aria-hidden="true">
-            <img className="envelope-letter-bismillah" src={bismillah} alt="" />
-            <small>بكل الحب ندعوكم لمشاركتنا فرحتنا</small>
-            <span className="envelope-letter-names">
-              <img src={yahyaName} alt="" />
-              <i>و</i>
-              <img src={daliaName} alt="" />
-            </span>
-            <span className="envelope-letter-rule" />
-            <small>١٢ نوفمبر ٢٠٢٦</small>
-          </span>
           <span className="envelope-pocket" style={{ clipPath: `url(#${pocketId})` }} aria-hidden="true">
             <img src={envelopeArtwork} alt="" draggable={false} />
           </span>
@@ -86,7 +71,7 @@ export default function EnvelopeIntro({
           </span>
           <span className="envelope-kicker" aria-hidden="true">دعوة خاصة لك</span>
           <span className="envelope-caption" aria-hidden="true">
-            <span lang="en" dir="ltr">Tap to open</span>
+            <span>افتح الدعوة</span>
           </span>
         </button>
 
