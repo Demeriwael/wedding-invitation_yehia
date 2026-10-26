@@ -24,7 +24,7 @@ type Attendance = "yes" | "declined" | null;
 const ENVELOPE_OPEN_DURATION = 3800;
 
 const MAPS_URL = "https://maps.app.goo.gl/Br6ykea6Nz7f8EaX8";
-const WHATSAPP_NUMBER = "9627893139676";
+const WHATSAPP_NUMBER = "962789319676";
 const APOLOGY_MESSAGE =
   "السلام عليكم، يؤسفني إبلاغكم أنه لن يتسنى لي حضور حفل زفاف يحيى وداليا، أعتذر عن عدم الحضور وأتمنى لهما دوام السعادة.";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(APOLOGY_MESSAGE)}`;
