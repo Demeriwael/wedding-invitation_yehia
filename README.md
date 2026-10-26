@@ -11,8 +11,11 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-The envelope opening lasts 3.8 seconds: seal release, flap unfolding, invitation
-lift, and page reveal. Visitors who prefer reduced motion get a short transition.
+The envelope matches the supplied ivory and gold stationery reference. The
+opening lasts 4.4 seconds: gold seal release, scalloped flap unfolding, pocket
+sliding away, and invitation reveal. Visitors who prefer reduced motion get a
+short transition. Artwork is bundled locally and the envelope layers use SVG
+clipping and CSS animation.
 
 ## Cloudflare Workers deployment
 

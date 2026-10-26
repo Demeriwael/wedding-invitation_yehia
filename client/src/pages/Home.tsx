@@ -17,11 +17,12 @@ import daliaName from "@/assets/images/dalia-name.webp";
 import heroFrame from "@/assets/images/hero-frame.webp";
 import yahyaName from "@/assets/images/yahya-name.webp";
 import { FloralSprig } from "@/components/FloralCorner";
+import EnvelopeIntro from "@/components/EnvelopeIntro";
 
 type IntroStage = "closed" | "opening" | "gone";
 type Attendance = "yes" | "declined" | null;
 
-const ENVELOPE_OPEN_DURATION = 3800;
+const ENVELOPE_OPEN_DURATION = 4400;
 
 const MAPS_URL = "https://maps.app.goo.gl/Br6ykea6Nz7f8EaX8";
 const WHATSAPP_NUMBER = "962789319676";
@@ -400,32 +401,8 @@ export default function Home() {
       </footer>
 
       {introStage !== "gone" && (
-        <div className={`envelope-screen ${introStage === "opening" ? "is-opening" : ""}`} aria-busy={introStage === "opening"}>
-          <span className="envelope-glow" aria-hidden="true" />
-          <FloralSprig className="envelope-floral envelope-floral-tl" />
-          <FloralSprig className="envelope-floral envelope-floral-br" />
-          <div className="envelope-scene">
-            <p className="envelope-kicker" style={{fontSize: '20px', fontWeight: '800'}}>دعوة خاصة لك</p>
-            <button className="envelope" onClick={openEnvelope} disabled={introStage === "opening"} aria-label="افتح الظرف لاستكشاف الدعوة">
-              <span className="envelope-shadow" />
-              <span className="envelope-back" />
-              <span className="envelope-letter"><span>يحيى <i>×</i> داليا</span><small>دعوة زفاف</small></span>
-              <span className="envelope-flap" />
-              <span className="envelope-front"><i /><b /></span>
-              <SealMark />
-            </button>
-            <p className="open-prompt">اضغط لفتح الظرف <ChevronHint /></p>
-            <div className="entry-note" role="note" aria-label="تنويه الحضور">
-              <strong>هذه الدعوة مخصصة لشخصين فقط</strong>
-              <span>نعتذر عن اصطحاب الأطفال</span>
-            </div>
-          </div>
-        </div>
+        <EnvelopeIntro opening={introStage === "opening"} onOpen={openEnvelope} />
       )}
     </div>
   );
-}
-
-function ChevronHint() {
-  return <span className="chevron-hint">⌄</span>;
 }
