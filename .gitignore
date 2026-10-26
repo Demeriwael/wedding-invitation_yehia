@@ -114,3 +114,6 @@ client/public/__manus__/version.json
 
 # Manus debug logs
 .manus-logs/
+
+# Cloudflare local state
+.wrangler/

@@ -21,6 +21,8 @@ import { FloralSprig } from "@/components/FloralCorner";
 type IntroStage = "closed" | "opening" | "gone";
 type Attendance = "yes" | "declined" | null;
 
+const ENVELOPE_OPEN_DURATION = 3800;
+
 const MAPS_URL = "https://maps.app.goo.gl/Br6ykea6Nz7f8EaX8";
 const WHATSAPP_NUMBER = "9627893139676";
 const APOLOGY_MESSAGE =
@@ -78,7 +80,12 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(WEDDING_DATE));
   const observerRoot = useRef<HTMLDivElement>(null);
   const envelopeTimer = useRef<number | null>(null);
+  const brandButton = useRef<HTMLButtonElement>(null);
   const overlayActive = introStage !== "gone";
+
+  useEffect(() => {
+    if (introStage === "gone") brandButton.current?.focus({ preventScroll: true });
+  }, [introStage]);
 
   useEffect(() => {
     document.body.style.overflow = overlayActive ? "hidden" : "";
@@ -128,7 +135,11 @@ export default function Home() {
   const openEnvelope = () => {
     if (introStage !== "closed") return;
     setIntroStage("opening");
-    envelopeTimer.current = window.setTimeout(() => setIntroStage("gone"), 1450);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    envelopeTimer.current = window.setTimeout(
+      () => setIntroStage("gone"),
+      reducedMotion ? 160 : ENVELOPE_OPEN_DURATION,
+    );
   };
 
   const saveTheDate = () => {
@@ -189,7 +200,7 @@ export default function Home() {
   return (
     <div ref={observerRoot} className="invitation-page" dir="rtl">
       <header inert={overlayActive} className={`topbar ${isScrolled ? "topbar-scrolled" : ""}`}>
-        <button className="brand-mark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="العودة إلى البداية">
+        <button ref={brandButton} className="brand-mark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="العودة إلى البداية">
           ي د
         </button>
         <div className="topbar-actions">
@@ -389,12 +400,13 @@ export default function Home() {
       </footer>
 
       {introStage !== "gone" && (
-        <div className={`envelope-screen ${introStage === "opening" ? "is-opening" : ""}`}>
+        <div className={`envelope-screen ${introStage === "opening" ? "is-opening" : ""}`} aria-busy={introStage === "opening"}>
+          <span className="envelope-glow" aria-hidden="true" />
           <FloralSprig className="envelope-floral envelope-floral-tl" />
           <FloralSprig className="envelope-floral envelope-floral-br" />
           <div className="envelope-scene">
             <p className="envelope-kicker" style={{fontSize: '20px', fontWeight: '800'}}>دعوة خاصة لك</p>
-            <button className="envelope" onClick={openEnvelope} aria-label="افتح الظرف لاستكشاف الدعوة">
+            <button className="envelope" onClick={openEnvelope} disabled={introStage === "opening"} aria-label="افتح الظرف لاستكشاف الدعوة">
               <span className="envelope-shadow" />
               <span className="envelope-back" />
               <span className="envelope-letter"><span>يحيى <i>×</i> داليا</span><small>دعوة زفاف</small></span>
