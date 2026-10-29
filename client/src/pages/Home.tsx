@@ -201,7 +201,7 @@ export default function Home() {
 
               <div className="parents-invite">
                 <div className="parent-col">
-                  <span className="parent-title">السيد</span>
+                  <span className="parent-title">الدكتور</span>
                   <strong className="parent-name">اسماعيل داقور</strong>
                 </div>
                 <div className="parent-col">
