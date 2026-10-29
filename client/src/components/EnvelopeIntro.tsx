@@ -76,7 +76,6 @@ export default function EnvelopeIntro({
         </button>
 
         <div className="entry-note" id={noteId} role="note" aria-label="تنويه الحضور">
-          <strong>هذه الدعوة مخصصة لشخصين فقط</strong>
           <span>نعتذر عن اصطحاب الأطفال</span>
         </div>
       </div>
