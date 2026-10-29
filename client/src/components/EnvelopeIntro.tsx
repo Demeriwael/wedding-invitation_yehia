@@ -2,6 +2,8 @@ import { useId } from "react";
 import "./envelope-intro.css";
 import envelopeArtwork from "@/assets/images/embossed-envelope.webp";
 import envelopeReference from "@/assets/images/envelope-reference.jpg";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import { invitationCopy, type InvitationLocale } from "@/lib/invitation-copy";
 
 // The two matching edges divide the artwork into a hinged flap and a pocket.
 const SCALLOPED_EDGE = `
@@ -22,10 +24,13 @@ const SCALLOPED_EDGE = `
 export default function EnvelopeIntro({
   opening,
   onOpen,
+  locale = "ar",
 }: {
   opening: boolean;
   onOpen: () => void;
+  locale?: InvitationLocale;
 }) {
+  const copy = invitationCopy[locale];
   const id = useId().replace(/:/g, "");
   const flapId = `${id}-flap`;
   const pocketId = `${id}-pocket`;
@@ -34,6 +39,7 @@ export default function EnvelopeIntro({
 
   return (
     <div className={`envelope-screen ${opening ? "is-opening" : ""}`} aria-busy={opening}>
+      <div className="envelope-language"><LanguageSwitch locale={locale} /></div>
       <svg className="envelope-clip-definitions" width="0" height="0" aria-hidden="true">
         <defs>
           <clipPath id={flapId} clipPathUnits="objectBoundingBox">
@@ -54,7 +60,7 @@ export default function EnvelopeIntro({
           className="reference-envelope"
           onClick={onOpen}
           disabled={opening}
-          aria-label="افتح الظرف لاستكشاف الدعوة"
+          aria-label={copy.envelopeOpen}
           aria-describedby={noteId}
         >
           <span className="envelope-liner" aria-hidden="true" />
@@ -69,14 +75,14 @@ export default function EnvelopeIntro({
               <image href={envelopeReference} width="720" height="1280" clipPath={`url(#${sealId})`} />
             </svg>
           </span>
-          <span className="envelope-kicker" aria-hidden="true">دعوة خاصة لك</span>
+          <span className="envelope-kicker" aria-hidden="true">{copy.envelopeKicker}</span>
           <span className="envelope-caption" aria-hidden="true">
-            <span>افتح الدعوة</span>
+            <span>{copy.envelopeCaption}</span>
           </span>
         </button>
 
-        <div className="entry-note" id={noteId} role="note" aria-label="تنويه الحضور">
-          <span>نعتذر عن اصطحاب الأطفال</span>
+        <div className="entry-note" id={noteId} role="note" aria-label={copy.noticeLabel}>
+          <span>{copy.envelopeNotice}</span>
         </div>
       </div>
     </div>

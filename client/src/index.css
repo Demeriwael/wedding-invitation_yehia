@@ -194,7 +194,49 @@ footer { padding: 8px 20px 32px; text-align: center; }
 footer p { margin: 0 0 7px; font-family: "Aref Ruqaa", serif; font-size: 21px; }
 footer > span { color: var(--muted-foreground); font-size: 12px; }
 .reveal { opacity: 1; transform: none; }
+.language-switch { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 24px; background: rgb(255 252 246 / 85%); color: var(--primary); font-family: system-ui, sans-serif; font-size: 12px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+.language-switch[lang="ar"] { font-family: "Noto Kufi Arabic", sans-serif; }
+.language-switch:hover { background: #eee3cf; }
+.envelope-language { position: absolute; z-index: 8; inset-block-start: max(16px, env(safe-area-inset-top)); inset-inline-end: 16px; }
+.english-invocation { max-width: 280px; margin: -5px 0 18px; color: var(--muted-foreground); font-size: 11px; line-height: 1.6; }
+.invitation-page[lang="en"] { font-family: system-ui, sans-serif; }
+.invitation-page[lang="en"] .brand-mark,
+.invitation-page[lang="en"] .verse,
+.invitation-page[lang="en"] .parent-name,
+.invitation-page[lang="en"] .hero-closing,
+.invitation-page[lang="en"] .details-heading h2,
+.invitation-page[lang="en"] .rsvp-card h2,
+.invitation-page[lang="en"] .note-quote p,
+.invitation-page[lang="en"] footer p { font-family: "Cormorant Garamond", Georgia, serif; }
+.invitation-page[lang="en"] .brand-mark { font-size: 25px; }
+.invitation-page[lang="en"] .verse { font-size: 21px; font-weight: 500; line-height: 1.4; }
+.invitation-page[lang="en"] .parent-name { font-size: 21px; font-weight: 600; white-space: normal; line-height: 1.3; }
+.invitation-page[lang="en"] .invite-phrase { font-size: 13px; line-height: 1.7; }
+.invitation-page[lang="en"] .relation-names { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.relation-name-text { color: #94713d; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(38px, 10vw, 52px); font-weight: 600; line-height: 1.2; }
+.invitation-page[lang="en"] .hero-closing { font-size: 24px; line-height: 1.35; }
+.invitation-page[lang="en"] .hero-detail { font-size: 12px; line-height: 1.5; }
+.invitation-page[lang="en"] .hero-actions a,
+.invitation-page[lang="en"] .calendar-button,
+.invitation-page[lang="en"] .map-link,
+.invitation-page[lang="en"] .rsvp-copy { font-size: 14px; }
+.invitation-page[lang="en"] .rsvp-copy { line-height: 1.75; }
+.invitation-page[lang="en"] .venue-notice p,
+.invitation-page[lang="en"] .timeline-content p { font-size: 13px; line-height: 1.7; }
+.invitation-page[lang="en"] .rsvp-hint { font-size: 12px; line-height: 1.6; }
+.invitation-page[lang="en"] .timeline::before { right: auto; left: 21px; }
+.invitation-page[lang="en"] .note-quote p { line-height: 1.4; }
+.invitation-page[lang="en"] footer p { font-size: 24px; }
+.invitation-page[lang="en"] .envelope-kicker { font-size: clamp(11px, 1.7svh, 15px); letter-spacing: .04em; }
+.invitation-page[lang="en"] .entry-note > span { font-size: clamp(9px, 1.3svh, 12px); }
 @keyframes cue-bob { 50% { transform: translateY(3px); } }
+
+@media (max-width: 440px) {
+  .topbar { padding-inline: 12px; }
+  .topbar-actions { gap: 2px; }
+  .header-rsvp { padding-inline: 7px; font-size: 10px; }
+  .language-switch { padding-inline: 7px; font-size: 11px; }
+}
 
 @media (min-width: 650px) {
   .hero-section { padding-top: 92px; }

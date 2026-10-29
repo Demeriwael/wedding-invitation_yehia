@@ -16,6 +16,9 @@ import daliaName from "@/assets/images/dalia-name.webp";
 import yahyaName from "@/assets/images/yahya-name.webp";
 import { FloralSprig } from "@/components/FloralCorner";
 import EnvelopeIntro from "@/components/EnvelopeIntro";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import { invitationCopy, type InvitationLocale } from "@/lib/invitation-copy";
+import { createWeddingCalendar, WEDDING_DATE } from "@/lib/wedding-event";
 
 type IntroStage = "closed" | "opening" | "gone";
 type Attendance = "yes" | "declined" | null;
@@ -24,17 +27,6 @@ const ENVELOPE_OPEN_DURATION = 1900;
 
 const MAPS_URL = "https://maps.app.goo.gl/Br6ykea6Nz7f8EaX8";
 const WHATSAPP_NUMBER = "962789319676";
-const APOLOGY_MESSAGE =
-  "السلام عليكم، يؤسفني إبلاغكم أنه لن يتسنى لي حضور حفل زفاف يحيى وداليا، أعتذر عن عدم الحضور وأتمنى لهما دوام السعادة.";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(APOLOGY_MESSAGE)}`;
-const CONFIRMATION_MESSAGE = "السلام عليكم، يسعدني تأكيد حضوري حفل زفاف يحيى وداليا. بارك الله لهما وبارك عليهما وجمع بينهما في خير.";
-const CONFIRMATION_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(CONFIRMATION_MESSAGE)}`;
-const WEDDING_DATE = new Date("2026-11-12T18:00:00+03:00");
-
-const schedule = [
-  { time: "٥:٠٠ م", title: "زفة", note: "عند بيت العروس" },
-  { time: "٦:٠٠ م", title: "استقبال الأحبة", note: "في الصالة" },
-];
 
 const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 function toArabicDigits(value: number) {
@@ -70,7 +62,11 @@ function Ornament({ className = "" }: { className?: string }) {
   );
 }
 
-export default function Home() {
+export default function Home({ locale = "ar" }: { locale?: InvitationLocale } = {}) {
+  const copy = invitationCopy[locale];
+  const confirmationUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(copy.confirmationMessage)}`;
+  const declineUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(copy.declineMessage)}`;
+  const formatDigits = (value: number) => locale === "ar" ? toArabicDigits(value) : String(value).padStart(2, "0");
   const [introStage, setIntroStage] = useState<IntroStage>("closed");
   const [isScrolled, setIsScrolled] = useState(false);
   const [attendance, setAttendance] = useState<Attendance>(null);
@@ -78,6 +74,13 @@ export default function Home() {
   const envelopeTimer = useRef<number | null>(null);
   const brandButton = useRef<HTMLButtonElement>(null);
   const overlayActive = introStage !== "gone";
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.title = copy.title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", copy.description);
+  }, [locale, copy]);
 
   useEffect(() => {
     if (introStage === "gone") brandButton.current?.focus({ preventScroll: true });
@@ -122,45 +125,31 @@ export default function Home() {
   };
 
   const saveTheDate = () => {
-    const event = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Yahya and Dalia//Wedding Invitation//AR",
-      "BEGIN:VEVENT",
-      "UID:yahya-dalia-2026@invitation",
-      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")}`,
-      "DTSTART:20261112T150000Z",
-      "DTEND:20261112T180000Z",
-      "SUMMARY:زفاف يحيى وداليا",
-      "LOCATION:قاعات النعمان - القاعة الملوكية",
-      "DESCRIPTION:ننتظركم لمشاركتنا فرحتنا.",
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
+    const event = createWeddingCalendar(locale);
     const blob = new Blob([event], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "yahya-dalia-wedding.ics";
+    anchor.download = locale === "en" ? "yahya-dalia-wedding-en.ics" : "yahya-dalia-wedding.ics";
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
     URL.revokeObjectURL(url);
-    toast.success("تم تحميل موعد الحفل", { description: "افتح الملف لإضافته إلى تقويمك." });
+    toast.success(copy.calendarToast, { description: copy.calendarToastDescription });
   };
 
   const shareInvitation = async () => {
     const shareData = {
-      title: "دعوة زفاف يحيى وداليا",
-      text: "يسعدنا دعوتكم لمشاركتنا فرحة زفاف يحيى وداليا",
-      url: `${window.location.origin}${window.location.pathname}`,
+      title: copy.shareTitle,
+      text: copy.shareText,
+      url: `${window.location.origin}${locale === "en" ? "/en/" : "/"}`,
     };
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(shareData.url);
-        toast.success("تم نسخ رابط الدعوة");
+        toast.success(copy.copied);
       }
     } catch {
       // Closing a native share sheet is intentionally silent.
@@ -169,24 +158,25 @@ export default function Home() {
 
   const respondYes = () => {
     setAttendance("yes");
-    toast("يسعدنا حضوركم", { description: "أرسل الرسالة الجاهزة في واتساب لتأكيد حضورك." });
+    toast(copy.yesToast, { description: copy.yesToastDescription });
   };
 
   const respondDecline = () => {
     setAttendance("declined");
-    toast("نعتذر لغيابكم، شكرًا لتواصلكم معنا", { description: "سيتم تحويلكم إلى واتساب لإرسال اعتذاركم." });
+    toast(copy.noToast, { description: copy.noToastDescription });
   };
 
   return (
-    <div className="invitation-page" dir="rtl">
+    <div className="invitation-page" lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <header inert={overlayActive} className={`topbar ${isScrolled ? "topbar-scrolled" : ""}`}>
-        <button ref={brandButton} className="brand-mark" onClick={() => window.scrollTo({ top: 0, behavior: "auto" })} aria-label="العودة إلى البداية">
-          ي د
+        <button ref={brandButton} className="brand-mark" onClick={() => window.scrollTo({ top: 0, behavior: "auto" })} aria-label={copy.backToStart}>
+          {copy.brand}
         </button>
         <div className="topbar-actions">
-          <a className="header-rsvp" href="#rsvp">تأكيد الحضور</a>
-          <button className="icon-action" onClick={replayEnvelope} aria-label="إعادة الدعوة" title="إعادة الدعوة"><RotateCcw size={17} strokeWidth={1.75} /></button>
-          <button className="icon-action" onClick={shareInvitation} aria-label="مشاركة الدعوة" title="مشاركة الدعوة"><Share2 size={18} strokeWidth={1.75} /></button>
+          <LanguageSwitch locale={locale} />
+          <a className="header-rsvp" href="#rsvp">{copy.rsvpAction}</a>
+          <button className="icon-action" onClick={replayEnvelope} aria-label={copy.replay} title={copy.replay}><RotateCcw size={17} strokeWidth={1.75} /></button>
+          <button className="icon-action" onClick={shareInvitation} aria-label={copy.share} title={copy.share}><Share2 size={18} strokeWidth={1.75} /></button>
         </div>
       </header>
 
@@ -196,56 +186,62 @@ export default function Home() {
             <FloralSprig className="hero-floral hero-floral-tl" />
             <FloralSprig className="hero-floral hero-floral-br" />
             <div className="hero-frame-content">
-              <img className="eyebrow-image" src={bismillah} alt="بسم الله الرحمن الرحيم" />
-              <p className="verse">الحمدلله الذي تتم بنعمه الصالحات</p>
+              <img className="eyebrow-image" src={bismillah} alt={locale === "en" ? "" : copy.invocationAlt} />
+              {copy.invocationTranslation && <p className="english-invocation">{copy.invocationTranslation}</p>}
+              <p className="verse">{copy.verse}</p>
 
               <div className="parents-invite">
                 <div className="parent-col">
-                  <span className="parent-title">الدكتور</span>
-                  <strong className="parent-name">اسماعيل داقور</strong>
+                  <span className="parent-title">{copy.firstHostTitle}</span>
+                  <strong className="parent-name">{copy.firstHostName}</strong>
                 </div>
                 <div className="parent-col">
-                  <span className="parent-title">السيد</span>
-                  <strong className="parent-name">يحيى الدميري</strong>
+                  <span className="parent-title">{copy.secondHostTitle}</span>
+                  <strong className="parent-name">{copy.secondHostName}</strong>
                 </div>
               </div>
-              <p className="invite-phrase">يتشرفان بدعوتكم لحضور حفل زفاف</p>
+              <p className="invite-phrase">{copy.invitePhrase}</p>
               <div className="relation-labels">
-                <span className="relation-label">ابنه</span>
-                <span className="relation-label">شقيقته</span>
+                <span className="relation-label">{copy.firstRelation}</span>
+                <span className="relation-label">{copy.secondRelation}</span>
               </div>
-              <h1 className="relation-names" aria-label="زفاف يحيى وداليا">
-                <img className="relation-name-img" src={yahyaName} alt="يحيى" />
-                <img className="relation-name-img" src={daliaName} alt="داليا" />
+              <h1 className="relation-names" aria-label={copy.coupleLabel}>
+                {locale === "ar" ? <>
+                  <img className="relation-name-img" src={yahyaName} alt={copy.firstName} />
+                  <img className="relation-name-img" src={daliaName} alt={copy.secondName} />
+                </> : <>
+                  <span className="relation-name-text">{copy.firstName}</span>
+                  <span className="relation-name-text">{copy.secondName}</span>
+                </>}
               </h1>
 
-              <p className="hero-willing">وذلك بمشيئة الله تعالى</p>
+              <p className="hero-willing">{copy.willing}</p>
               <div className="hero-details-row">
                 <div className="hero-detail">
                   <CalendarDays size={16} strokeWidth={1.6} />
-                  <span>١٢ نوفمبر</span>
+                  <span>{copy.shortDate}</span>
                 </div>
                 <span className="hero-detail-sep" aria-hidden="true" />
                 <div className="hero-detail">
                   <Clock3 size={16} strokeWidth={1.6} />
-                  <span>٦:٠٠ م</span>
+                  <span>{copy.shortTime}</span>
                 </div>
                 <span className="hero-detail-sep" aria-hidden="true" />
                 <a className="hero-detail hero-detail-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer">
                   <MapPin size={16} strokeWidth={1.6} />
-                  <span>قاعات النعمان</span>
+                  <span>{copy.venue}</span>
                 </a>
               </div>
-              <p className="hero-closing">وبحضوركم يتم لنا الفرح والسرور</p>
+              <p className="hero-closing">{copy.closing}</p>
               <Ornament className="hero-ornament" />
             </div>
           </div>
           <div className="hero-actions">
-            <a className="hero-map-action" href={MAPS_URL} target="_blank" rel="noopener noreferrer"><MapPin size={17} /> موقع الحفل</a>
-            <a className="hero-rsvp-action" href="#rsvp"><Heart size={17} /> تأكيد الحضور</a>
+            <a className="hero-map-action" href={MAPS_URL} target="_blank" rel="noopener noreferrer"><MapPin size={17} /> {copy.venueAction}</a>
+            <a className="hero-rsvp-action" href="#rsvp"><Heart size={17} /> {copy.rsvpAction}</a>
           </div>
           <button className="scroll-cue" onClick={() => document.getElementById("details")?.scrollIntoView({ behavior: "auto" })}>
-            <span>تفاصيل الأمسية</span>
+            <span>{copy.detailsKicker}</span>
             <ArrowDown size={17} />
           </button>
         </section>
@@ -255,57 +251,56 @@ export default function Home() {
           <FloralSprig className="section-floral section-floral-br" />
           <div className="content-column">
             <div className="details-heading reveal">
-              <p className="mini-kicker">تفاصيل الأمسية</p>
-              <h2>نلتقي على الفرح</h2>
+              <p className="mini-kicker">{copy.detailsKicker}</p>
+              <h2>{copy.detailsHeading}</h2>
             </div>
 
             <div className="details-card reveal">
               <div className="detail-trio">
                 <div className="detail-chip">
                   <span className="detail-chip-icon"><Clock3 size={18} /></span>
-                  <small>الوقت</small>
-                  <strong>السادسة مساءً</strong>
+                  <small>{copy.timeLabel}</small>
+                  <strong>{copy.time}</strong>
                 </div>
                 <span className="detail-chip-sep" aria-hidden="true" />
                 <div className="detail-chip">
                   <span className="detail-chip-icon"><MapPin size={18} /></span>
-                  <small>المكان</small>
-                  <strong>قاعات النعمان</strong>
-                  <em>القاعة الملوكية</em>
+                  <small>{copy.venueLabel}</small>
+                  <strong>{copy.venue}</strong>
+                  <em>{copy.hall}</em>
                 </div>
                 <span className="detail-chip-sep" aria-hidden="true" />
                 <div className="detail-chip">
                   <span className="detail-chip-icon"><CalendarDays size={18} /></span>
-                  <small>التاريخ</small>
-                  <strong>الخميس</strong>
-                  <em>١٢ نوفمبر ٢٠٢٦</em>
+                  <small>{copy.dateLabel}</small>
+                  <strong>{copy.weekday}</strong>
+                  <em>{copy.fullDate}</em>
                 </div>
               </div>
               <div className="detail-trio-foot">
-                <a className="map-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer">عرض الموقع على خرائط جوجل</a>
+                <a className="map-link" href={MAPS_URL} target="_blank" rel="noopener noreferrer">{copy.mapAction}</a>
               </div>
               <button className="calendar-button" onClick={saveTheDate}>
-                <CalendarDays size={17} /> <span>أضف الموعد إلى تقويمك</span>
+                <CalendarDays size={17} /> <span>{copy.calendarAction}</span>
               </button>
             </div>
 
             <div className="venue-notice reveal">
-              <p>عذرًا، الدعوة لا تشمل اصطحاب الأطفال</p>
-              <p>يُرجى التكرم بعدم التصوير داخل القاعة</p>
+              <p>{copy.childrenNotice}</p>
+              <p>{copy.photographyNotice}</p>
             </div>
 
             <div className="countdown-card reveal">
-              <p className="countdown-title">الوقت المتبقي حتى الفرح</p>
+              <p className="countdown-title">{copy.countdownTitle}</p>
               <div className="countdown-grid">
-                <div className="countdown-box"><strong>{toArabicDigits(timeLeft.days)}</strong><span>يوم</span></div>
-                <div className="countdown-box"><strong>{toArabicDigits(timeLeft.hours)}</strong><span>ساعة</span></div>
-                <div className="countdown-box"><strong>{toArabicDigits(timeLeft.minutes)}</strong><span>دقيقة</span></div>
-                <div className="countdown-box"><strong>{toArabicDigits(timeLeft.seconds)}</strong><span>ثانية</span></div>
+                {[timeLeft.days, timeLeft.hours, timeLeft.minutes, timeLeft.seconds].map((value, index) => (
+                  <div className="countdown-box" key={copy.countdownLabels[index]}><strong>{formatDigits(value)}</strong><span>{copy.countdownLabels[index]}</span></div>
+                ))}
               </div>
             </div>
 
             <div className="timeline reveal">
-              {schedule.map((item, index) => (
+              {copy.schedule.map((item, index) => (
                 <div className="timeline-item" key={item.time}>
                   <div className="timeline-dot"><span>{index + 1}</span></div>
                   <div className="timeline-content"><time>{item.time}</time><h3>{item.title}</h3><p>{item.note}</p></div>
@@ -320,8 +315,8 @@ export default function Home() {
           <FloralSprig className="section-floral section-floral-br" />
           <div className="note-quote reveal">
             <span className="quote-mark">“</span>
-            <p>وجودكم حولنا هو الهدية التي ننتظرها،<br />فكونوا معنا لنصنع ذكرى تُحكى.</p>
-            <span className="signature">يحيى وداليا</span>
+            <p>{copy.quoteFirst}<br />{copy.quoteSecond}</p>
+            <span className="signature">{copy.signature}</span>
           </div>
           <Ornament className="note-ornament reveal" />
         </section>
@@ -330,24 +325,24 @@ export default function Home() {
           <div className="content-column">
             <div className="rsvp-card reveal">
               <div className="rsvp-icon"><MessageCircleHeart size={24} /></div>
-              <p className="mini-kicker">ننتظركم</p>
-              <h2>هل ستشاركوننا الفرح؟</h2>
-              <p className="rsvp-copy">يسعدنا تأكيد حضوركم أو اعتذاركم برسالة عبر واتساب.</p>
+              <p className="mini-kicker">{copy.rsvpKicker}</p>
+              <h2>{copy.rsvpHeading}</h2>
+              <p className="rsvp-copy">{copy.rsvpCopy}</p>
               <div className="rsvp-actions">
-                <a className={`primary-rsvp ${attendance === "yes" ? "selected" : ""}`} href={CONFIRMATION_URL} target="_blank" rel="noopener noreferrer" onClick={respondYes}>
-                  {attendance === "yes" ? <Check size={18} /> : <Heart size={17} fill="currentColor" />} سأكون معكم
+                <a className={`primary-rsvp ${attendance === "yes" ? "selected" : ""}`} href={confirmationUrl} target="_blank" rel="noopener noreferrer" onClick={respondYes}>
+                  {attendance === "yes" ? <Check size={18} /> : <Heart size={17} fill="currentColor" />} {copy.rsvpYes}
                 </a>
                 <a
                   className={`secondary-rsvp ${attendance === "declined" ? "selected" : ""}`}
-                  href={WHATSAPP_URL}
+                  href={declineUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={respondDecline}
                 >
-                  لن أتمكن من الحضور
+                  {copy.rsvpNo}
                 </a>
               </div>
-              <p className="rsvp-hint">اختر ردّك، ثم أرسل الرسالة الجاهزة في واتساب</p>
+              <p className="rsvp-hint">{copy.rsvpHint}</p>
             </div>
           </div>
         </section>
@@ -355,12 +350,12 @@ export default function Home() {
 
       <footer inert={overlayActive}>
         <Ornament className="footer-ornament" />
-        <p>بكل الحب، ننتظركم</p>
-        <span>يحيى × داليا</span>
+        <p>{copy.footerMessage}</p>
+        <span>{copy.footerNames}</span>
       </footer>
 
       {introStage !== "gone" && (
-        <EnvelopeIntro opening={introStage === "opening"} onOpen={openEnvelope} />
+        <EnvelopeIntro opening={introStage === "opening"} onOpen={openEnvelope} locale={locale} />
       )}
     </div>
   );

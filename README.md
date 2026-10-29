@@ -1,6 +1,13 @@
 # Wedding invitation
 
-Arabic wedding invitation built with React and Vite.
+Arabic and English wedding invitation built with React and Vite.
+
+Arabic is the main version at `/`. The separate English invitation is at `/en/`.
+Each version has a language switch on the envelope and in the invitation header.
+Calendar files, RSVP drafts, share links, page metadata, text direction, and
+countdown digits follow the selected language. Visiting `/` always opens Arabic;
+the site does not redirect based on browser language. Both HTML entry points are
+built for direct links and refreshes on Cloudflare.
 
 ## Local preview
 
