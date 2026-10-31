@@ -164,6 +164,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .timeline-content time { color: #8d6c35; font-size: 13px; }
 .timeline-content h3 { margin: 4px 0; font-size: 14px; font-weight: 600; }
 .timeline-content p { margin: 0; font-size: 12px; color: var(--muted-foreground); line-height: 1.9; }
+.timeline-location { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; max-width: 100%; margin: 8px 0 18px; padding: 9px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--primary); font-size: 12px; line-height: 1.6; text-align: center; text-decoration: none; }
+.timeline-location svg { flex-shrink: 0; }
+.timeline-location:hover { background: #f6eddd; }
 
 .note-section { position: relative; overflow: hidden; padding: 54px 22px 38px; text-align: center; }
 .section-floral { position: absolute; width: 110px; opacity: .5; filter: sepia(.3) saturate(.6); pointer-events: none; }

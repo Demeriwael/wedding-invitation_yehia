@@ -303,7 +303,17 @@ export default function Home({ locale = "ar" }: { locale?: InvitationLocale } = 
               {copy.schedule.map((item, index) => (
                 <div className="timeline-item" key={item.time}>
                   <div className="timeline-dot"><span>{index + 1}</span></div>
-                  <div className="timeline-content"><time>{item.time}</time><h3>{item.title}</h3><p>{item.note}</p></div>
+                  <div className="timeline-content">
+                    <time>{item.time}</time>
+                    <h3>{item.title}</h3>
+                    <p>{item.note}</p>
+                    {item.location && (
+                      <a className="timeline-location" href={item.location.url} target="_blank" rel="noopener noreferrer">
+                        <MapPin size={17} strokeWidth={1.6} aria-hidden="true" />
+                        <span>{item.location.label}</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

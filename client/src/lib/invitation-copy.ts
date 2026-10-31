@@ -1,5 +1,7 @@
 export type InvitationLocale = "ar" | "en";
 
+const PROCESSION_LOCATION_URL = "https://maps.app.goo.gl/Ss4cX8WHW6rj7JCU9?g_st=ic";
+
 export const invitationCopy = {
   ar: {
     title: "دعوة زفاف — يحيى وداليا",
@@ -57,7 +59,12 @@ export const invitationCopy = {
     countdownTitle: "الوقت المتبقي حتى الفرح",
     countdownLabels: ["يوم", "ساعة", "دقيقة", "ثانية"],
     schedule: [
-      { time: "٥:٠٠ م", title: "زفة", note: "عند بيت العروس" },
+      {
+        time: "٤:٤٥ م",
+        title: "زفة",
+        note: "عند بيت العروس",
+        location: { url: PROCESSION_LOCATION_URL, label: "موقع الزفة على الخريطة" },
+      },
       { time: "٦:٠٠ م", title: "استقبال الأحبة", note: "في الصالة" },
     ],
     quoteFirst: "وجودكم حولنا هو الهدية التي ننتظرها،",
@@ -134,7 +141,12 @@ export const invitationCopy = {
     countdownTitle: "Counting down to our celebration",
     countdownLabels: ["Days", "Hours", "Minutes", "Seconds"],
     schedule: [
-      { time: "5:00 PM", title: "Wedding procession", note: "At the bride's home" },
+      {
+        time: "4:45 PM",
+        title: "Wedding procession",
+        note: "At the bride's home",
+        location: { url: PROCESSION_LOCATION_URL, label: "View procession location" },
+      },
       { time: "6:00 PM", title: "Welcoming our loved ones", note: "At the hall" },
     ],
     quoteFirst: "Your presence is the gift we look forward to.",
