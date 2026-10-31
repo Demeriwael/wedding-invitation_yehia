@@ -1,6 +1,6 @@
 export type InvitationLocale = "ar" | "en";
 
-const PROCESSION_LOCATION_URL = "https://maps.app.goo.gl/Ss4cX8WHW6rj7JCU9?g_st=ic";
+const PROCESSION_LOCATION_URL = "https://maps.app.goo.gl/GMDeXHCcLdiNqv6c8?g_st=ic";
 
 export const invitationCopy = {
   ar: {
